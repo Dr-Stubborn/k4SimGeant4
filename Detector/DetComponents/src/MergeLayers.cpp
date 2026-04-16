@@ -1,9 +1,12 @@
 #include "MergeLayers.h"
 
-// FCCSW
+// k4Interface
 #include "k4Interface/IGeoSvc.h"
 
-// datamodel
+// k4FWCore
+#include "k4FWCore/MetadataUtils.h"
+
+// EDM4hep
 #include "edm4hep/CalorimeterHitCollection.h"
 
 // DD4hep
@@ -55,6 +58,7 @@ StatusCode MergeLayers::initialize() {
             << endmsg;
     return StatusCode::FAILURE;
   }
+  k4FWCore::putCellIDEncoding(m_outHits.objKey(), m_descriptor.fieldDescription(), this);
   info() << "Field description: " << m_descriptor.fieldDescription() << endmsg;
   info() << "Merging volumes named: " << m_volumeName << endmsg;
   info() << "Merging volumes for identifier: " << m_idToMerge << endmsg;
