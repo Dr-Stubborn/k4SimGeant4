@@ -5,6 +5,8 @@
 #include "Gaudi/Algorithm.h"
 #include "GaudiKernel/ServiceHandle.h"
 
+#include <vector>
+
 // FCCSW
 #include "k4FWCore/DataHandle.h"
 class IGeoSvc;
@@ -63,8 +65,28 @@ private:
   Gaudi::Property<uint> m_firstLayerId{this, "firstLayerId", 0, "ID of first layer"};
   /// Name of the detector readout
   Gaudi::Property<std::string> m_readoutName{this, "readoutName", "", "Name of the detector readout"};
-  // Maximum energy for the axis range
-  Gaudi::Property<double> m_energy{this, "energyAxis", 500, "Maximum energy for axis range"};
+  // Deprecated: kept for backward-compatible steering files. Dynamic ranges are data-driven.
+  Gaudi::Property<double> m_energy{this, "energyAxis", 500, "Deprecated: dynamic range is data-driven"};
+  // Bin width for all energy histograms
+  Gaudi::Property<double> m_energyBinWidth{this, "energyBinWidth", 0.5, "Bin width for energy histograms"};
+  // Safety factor to extend dynamic histogram range above the observed maximum
+  Gaudi::Property<double> m_rangeMargin{this, "rangeMargin", 1.1, "Margin factor for dynamic histogram ranges"};
+  // Number of bins for sampling fraction histograms in [0, 1]
+  Gaudi::Property<uint> m_samplingFractionBins{this, "samplingFractionBins", 1000,
+                                               "Number of bins for sampling fraction histograms"};
+
+  // Cached per-event quantities. Histograms are built and filled in finalize.
+  mutable std::vector<double> m_eventTotalEnergy;
+  mutable std::vector<double> m_eventTotalActiveEnergy;
+  mutable std::vector<std::vector<double>> m_eventLayerTotalEnergy;
+  mutable std::vector<std::vector<double>> m_eventLayerActiveEnergy;
+
+  // Observed maxima used to derive dynamic histogram ranges.
+  mutable double m_maxTotalEnergy{0.0};
+  mutable double m_maxTotalActiveEnergy{0.0};
+  mutable std::vector<double> m_maxLayerTotalEnergy;
+  mutable std::vector<double> m_maxLayerActiveEnergy;
+
   // Histograms of total deposited energy within layer
   // Layers are numbered starting at 1. Layer 0 includes total energy deposited in cryostat and bath (in front and
   // behind calo)
