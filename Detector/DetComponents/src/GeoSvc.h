@@ -24,11 +24,13 @@ public:
   // This function generates the Geant4 geometry
   StatusCode buildGeant4Geo();
   // receive DD4hep Geometry
-  virtual dd4hep::DetElement getDD4HepGeo() override;
-  virtual dd4hep::Detector* getDetector() override;
-  virtual std::string constantAsString(std::string const& name) override;
+  virtual dd4hep::DetElement getDD4HepGeo();
+  virtual dd4hep::Detector* getDetector();
+  virtual const dd4hep::Detector* getDetector() const;
+  virtual std::string constantAsString(std::string const& name);
+  virtual std::string constantAsString(std::string const& name) const;
   // receive Geant4 Geometry
-  virtual G4VUserDetectorConstruction* getGeant4Geo() override;
+  virtual G4VUserDetectorConstruction* getGeant4Geo();
 
 private:
   // Pointer to the interface to the DD4hep geometry
@@ -38,7 +40,12 @@ private:
 
   Gaudi::Property<std::vector<std::string>> m_xmlFileNames{this, "detectors", {}, "Detector descriptions XML-files"};
   Gaudi::Property<std::map<std::string, std::string>> m_sensitive_types{
-      this, "sensitiveTypes", {{"tracker", "SimpleTrackerSD"}, {"calorimeter", "SimpleCalorimeterSD"}}};
+      this,
+      "sensitiveTypes",
+      {{"tracker", "Geant4tracker"},
+       {"SimpleTrackerSD", "Geant4tracker"},
+       {"calorimeter", "Geant4calorimeter"},
+       {"SimpleCalorimeterSD", "Geant4calorimeter"}}};
   Gaudi::Property<bool> m_buildGeant4Geo{this, "EnableGeant4Geo", true,
                                          "If True the DD4hep geometry is converted for Geant4 Simulations"};
 };
